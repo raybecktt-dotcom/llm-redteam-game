@@ -1,4 +1,4 @@
-import requesimport re
+import re
 
 class SecurityEvaluator:
     @staticmethod
