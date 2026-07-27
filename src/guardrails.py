@@ -59,3 +59,26 @@ class GuardrailFilter:
         return False, "Prompt Allowed", {
             "action": "PASSED"
         }
+
+class SuspicionTracker:
+    def __init__(self, decay_rate: int = 5):
+        self.score = 0
+        self.decay_rate = decay_rate
+
+    def add_suspicion(self, points: int):
+        self.score = min(100, self.score + points)
+
+    def decay(self):
+        self.score = max(0, self.score - self.decay_rate)
+
+    def calculate_prompt_risk(self, prompt: str) -> int:
+        risk = 0
+        p_lower = prompt.lower()
+        keywords = ["override", "system", "jailbreak", "bypass", "sudo", "admin", "prompt", "flag", "key"]
+        
+        for kw in keywords:
+            if kw in p_lower:
+                risk += 15
+        if len(prompt) > 200:  # Long context-poisoning payloads
+            risk += 10
+        return risk
